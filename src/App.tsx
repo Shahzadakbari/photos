@@ -58,11 +58,13 @@ export function App() {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length >= 9) {
-          const ronaldoPhoto = initialPhotos.find((p) => p.id === 'photo-1');
-          if (ronaldoPhoto) {
-            return parsed.map((p: Photo) => (p.id === 'photo-1' ? ronaldoPhoto : p));
-          }
-          return parsed;
+          return parsed.map((p: Photo) => {
+            const fresh = initialPhotos.find((ip) => ip.id === p.id);
+            if (fresh && (p.id === 'photo-1' || p.id === 'photo-2')) {
+              return fresh;
+            }
+            return p;
+          });
         }
       } catch (e) {
         console.error('Failed to parse cached photos:', e);
