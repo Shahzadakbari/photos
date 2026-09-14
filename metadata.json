@@ -1,0 +1,6 @@
+{
+  "name": "Photos",
+  "description": "A modern, elegant photo gallery, organizer, and editor with album management, EXIF metadata inspection, and canvas-based image adjustments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
