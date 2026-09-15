@@ -4,6 +4,7 @@ import { Photo, ViewLayout } from '../types';
 
 interface PhotoCardProps {
   photo: Photo;
+  index?: number;
   viewLayout: ViewLayout;
   onOpenLightbox: (photo: Photo) => void;
   onOpenEditor: (photo: Photo) => void;
@@ -13,6 +14,7 @@ interface PhotoCardProps {
 
 export const PhotoCard: React.FC<PhotoCardProps> = ({
   photo,
+  index,
   viewLayout,
   onOpenLightbox,
   onOpenEditor,
@@ -20,6 +22,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
   onRatePhoto,
 }) => {
   const [imgError, setImgError] = useState(false);
+
+  const displayNum =
+    index ?? (photo.id.match(/\d+/) ? parseInt(photo.id.match(/\d+/)![0], 10) : undefined);
 
   // Details list view layout
   if (viewLayout === 'details') {
@@ -36,8 +41,18 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
+          {displayNum !== undefined && (
+            <div className="absolute top-1 left-1 z-10 pointer-events-none">
+              <span 
+                className="inline-flex items-center justify-center min-w-4 h-4 px-1 rounded bg-neutral-950/85 backdrop-blur-md text-white font-mono text-[10px] font-bold border border-white/20 shadow-sm select-none"
+                title={`Photo #${displayNum}`}
+              >
+                {displayNum}
+              </span>
+            </div>
+          )}
           {photo.isFavorite && (
-            <div className="absolute top-1 left-1 p-1 bg-neutral-950/60 backdrop-blur-md rounded-full text-rose-500">
+            <div className="absolute top-1 right-1 p-1 bg-neutral-950/60 backdrop-blur-md rounded-full text-rose-500">
               <Heart className="w-3 h-3 fill-rose-500" />
             </div>
           )}
@@ -141,9 +156,17 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
             </div>
           )}
 
-          {/* Category Tag overlay */}
-          <div className="absolute top-3 left-3">
-            <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-md bg-neutral-900/80 backdrop-blur-md text-neutral-200 border border-neutral-700/60 shadow-sm">
+          {/* Number Badge and Category Tag overlay */}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+            {displayNum !== undefined && (
+              <span 
+                className="inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-md bg-neutral-950/85 backdrop-blur-md text-white font-mono text-[11px] font-bold border border-white/20 shadow-md select-none"
+                title={`Photo #${displayNum}`}
+              >
+                {displayNum}
+              </span>
+            )}
+            <span className="text-[10px] font-medium tracking-wide uppercase px-1.5 py-0.5 rounded-md bg-neutral-900/80 backdrop-blur-md text-neutral-200 border border-neutral-700/60 shadow-sm select-none">
               {photo.category}
             </span>
           </div>
@@ -239,13 +262,35 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
           </div>
         )}
 
+        {/* Persistent number badge in top-left edge */}
+        {displayNum !== undefined && (
+          <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none group-hover:opacity-0 transition-opacity">
+            <span 
+              className="inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-md bg-neutral-950/85 backdrop-blur-md text-white font-mono text-[11px] font-bold border border-white/20 shadow-md select-none"
+              title={`Photo #${displayNum}`}
+            >
+              {displayNum}
+            </span>
+          </div>
+        )}
+
         {/* Gradient Overlay on Hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3.5">
-          {/* Top Row: Category tag and actions */}
+          {/* Top Row: Category tag, number, and actions */}
           <div className="flex items-center justify-between gap-2" onClick={(e) => e.stopPropagation()}>
-            <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-md bg-neutral-900/80 backdrop-blur-md text-neutral-200 border border-neutral-700/60">
-              {photo.category}
-            </span>
+            <div className="flex items-center gap-1.5">
+              {displayNum !== undefined && (
+                <span 
+                  className="inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-md bg-neutral-950/90 backdrop-blur-md text-white font-mono text-[11px] font-bold border border-white/20 shadow-md select-none"
+                  title={`Photo #${displayNum}`}
+                >
+                  {displayNum}
+                </span>
+              )}
+              <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-md bg-neutral-900/80 backdrop-blur-md text-neutral-200 border border-neutral-700/60 select-none">
+                {photo.category}
+              </span>
+            </div>
 
             <div className="flex items-center gap-1.5">
               <button

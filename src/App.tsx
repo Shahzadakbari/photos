@@ -394,10 +394,11 @@ export function App() {
               ) : viewLayout === 'details' ? (
                 /* Details List Layout */
                 <div className="space-y-2">
-                  {filteredPhotos.map((photo) => (
+                  {filteredPhotos.map((photo, index) => (
                     <PhotoCard
                       key={photo.id}
                       photo={photo}
+                      index={index + 1}
                       viewLayout="details"
                       onOpenLightbox={(p) => setActiveLightboxPhoto(p)}
                       onOpenEditor={(p) => setActiveEditorPhoto(p)}
@@ -409,10 +410,11 @@ export function App() {
               ) : viewLayout === 'grid' ? (
                 /* 3 Rows × 3 Columns Equal Dimension Photo Grid (9 Photos) */
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-6">
-                  {filteredPhotos.map((photo) => (
+                  {filteredPhotos.map((photo, index) => (
                     <PhotoCard
                       key={photo.id}
                       photo={photo}
+                      index={index + 1}
                       viewLayout="grid"
                       onOpenLightbox={(p) => setActiveLightboxPhoto(p)}
                       onOpenEditor={(p) => setActiveEditorPhoto(p)}
@@ -424,10 +426,11 @@ export function App() {
               ) : (
                 /* Responsive Columns Masonry Layout */
                 <div className="columns-1 sm:columns-2 md:columns-3 xl:columns-4 gap-4 space-y-4">
-                  {filteredPhotos.map((photo) => (
+                  {filteredPhotos.map((photo, index) => (
                     <div key={photo.id} className="break-inside-avoid">
                       <PhotoCard
                         photo={photo}
+                        index={index + 1}
                         viewLayout="masonry"
                         onOpenLightbox={(p) => setActiveLightboxPhoto(p)}
                         onOpenEditor={(p) => setActiveEditorPhoto(p)}

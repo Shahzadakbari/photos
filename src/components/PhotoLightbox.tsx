@@ -247,6 +247,9 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
               }`}
             >
               <img src={p.thumbnailUrl} alt={p.title} className="w-full h-full object-cover" />
+              <span className="absolute bottom-1 left-1 px-1 rounded bg-neutral-950/85 backdrop-blur-sm text-[10px] font-mono font-bold text-white border border-white/20">
+                {idx + 1}
+              </span>
             </button>
           ))}
         </div>
