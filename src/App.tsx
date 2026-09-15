@@ -60,7 +60,7 @@ export function App() {
         if (Array.isArray(parsed) && parsed.length >= 9) {
           return parsed.map((p: Photo) => {
             const fresh = initialPhotos.find((ip) => ip.id === p.id);
-            if (fresh && (p.id === 'photo-1' || p.id === 'photo-2' || p.id === 'photo-3')) {
+            if (fresh && (p.id === 'photo-1' || p.id === 'photo-2' || p.id === 'photo-3' || p.id === 'photo-4')) {
               return fresh;
             }
             return p;
