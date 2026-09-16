@@ -15,7 +15,10 @@ import {
   HeartPulse,
   Activity,
   Zap,
-  Gauge
+  Gauge,
+  Film,
+  Eye,
+  SlidersHorizontal
 } from 'lucide-react';
 import { 
   BackgroundMotionConfig, 
@@ -162,6 +165,20 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
           className="relative rounded-2xl p-4 overflow-hidden border border-neutral-700/70 shadow-lg"
           style={{ backgroundColor: currentColor }}
         >
+          {/* Background GIF in preview */}
+          {motionConfig.bgMediaEnabled !== false && (
+            <img
+              src={motionConfig.bgMediaUrl || 'https://c.tenor.com/G0dP5NM52YwAAAAC/roof-piece-luffy.gif'}
+              alt="Luffy GIF Background"
+              referrerPolicy="no-referrer"
+              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+              style={{
+                opacity: motionConfig.bgMediaOpacity ?? 0.65,
+                filter: (motionConfig.bgMediaBlur ?? 0) > 0 ? `blur(${motionConfig.bgMediaBlur}px)` : undefined,
+              }}
+            />
+          )}
+
           {/* Subtle animated orbs in miniature preview */}
           {motionConfig.enabled && motionConfig.style !== 'static' && (
             <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-60 filter blur-xl">
@@ -180,13 +197,21 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
             </div>
           )}
 
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 bg-neutral-950/60 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 bg-neutral-950/75 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
             <div className="flex items-center gap-3">
               <div 
-                className="w-10 h-10 rounded-xl border-2 border-white/40 shadow-inner flex items-center justify-center shrink-0"
+                className="w-10 h-10 rounded-xl border-2 border-white/40 shadow-inner flex items-center justify-center shrink-0 overflow-hidden relative"
                 style={{ backgroundColor: currentColor }}
               >
-                <Sparkles className="w-4 h-4 text-white drop-shadow" />
+                {motionConfig.bgMediaEnabled !== false ? (
+                  <img 
+                    src={motionConfig.bgMediaUrl || 'https://c.tenor.com/G0dP5NM52YwAAAAC/roof-piece-luffy.gif'} 
+                    alt="Luffy" 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <Sparkles className="w-4 h-4 text-white drop-shadow" />
+                )}
               </div>
               <div>
                 <div className="text-xs font-semibold text-white flex items-center gap-2">
@@ -194,13 +219,15 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
                   <span className="font-mono text-amber-300 uppercase font-bold">{currentColor}</span>
                 </div>
                 <div className="text-[11px] text-neutral-300 flex items-center gap-2 mt-0.5">
+                  <span>
+                    GIF: <strong className="text-amber-400">{motionConfig.bgMediaEnabled !== false ? 'Roof Piece Luffy' : 'Disabled'}</strong>
+                  </span>
+                  <span>•</span>
                   <span className="capitalize">
                     Motion: <strong className="text-amber-400">{motionConfig.enabled ? motionConfig.style : 'Disabled'}</strong>
                   </span>
                   <span>•</span>
                   <span className="capitalize">{motionConfig.speed} speed</span>
-                  <span>•</span>
-                  <span className="capitalize">{motionConfig.intensity} glow</span>
                 </div>
               </div>
             </div>
@@ -218,6 +245,129 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
               <span>{motionConfig.enabled ? 'Motion ON' : 'Motion OFF'}</span>
             </button>
           </div>
+        </div>
+
+        {/* Roof Piece Luffy Animated Background GIF Controls */}
+        <div className="p-4 rounded-xl bg-neutral-850/90 border border-neutral-800 space-y-3.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
+              <Film className="w-3.5 h-3.5 text-rose-400" />
+              Animated Background GIF (Roof Piece Luffy)
+            </label>
+            <span className="text-[11px] text-rose-400 font-medium flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping inline-block" />
+              Anime Motion Active
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-neutral-900/80 rounded-xl border border-neutral-800">
+            {/* Luffy Thumbnail */}
+            <div className="w-24 h-14 rounded-lg overflow-hidden border border-neutral-700 shrink-0 relative group shadow-inner">
+              <img
+                src={motionConfig.bgMediaUrl || 'https://c.tenor.com/G0dP5NM52YwAAAAC/roof-piece-luffy.gif'}
+                alt="Roof Piece Luffy"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/70 text-white backdrop-blur-xs">
+                  GIF
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="text-xs font-semibold text-white truncate">
+                  One Piece: Roof Piece Luffy
+                </h4>
+                {/* Toggle GIF Button */}
+                <button
+                  onClick={() =>
+                    onUpdateMotionConfig({
+                      bgMediaEnabled: motionConfig.bgMediaEnabled === false ? true : false,
+                    })
+                  }
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                    motionConfig.bgMediaEnabled !== false
+                      ? 'bg-rose-500 hover:bg-rose-400 text-white shadow-sm'
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700'
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{motionConfig.bgMediaEnabled !== false ? 'Luffy GIF: ON' : 'Luffy GIF: OFF'}</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-neutral-400 mt-1 line-clamp-1">
+                Luffy walking with cloak on the Onigashima rooftop. Loops seamlessly behind your gallery.
+              </p>
+            </div>
+          </div>
+
+          {/* Opacity & Blur Controls for the GIF */}
+          {motionConfig.bgMediaEnabled !== false && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-neutral-800/80">
+              {/* Opacity Slider */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-neutral-400">
+                  <span className="flex items-center gap-1">
+                    <SlidersHorizontal className="w-3 h-3 text-neutral-400" />
+                    GIF Visibility / Opacity
+                  </span>
+                  <span className="text-amber-400 font-mono font-medium">
+                    {Math.round((motionConfig.bgMediaOpacity ?? 0.65) * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.2"
+                  max="1.0"
+                  step="0.05"
+                  value={motionConfig.bgMediaOpacity ?? 0.65}
+                  onChange={(e) =>
+                    onUpdateMotionConfig({ bgMediaOpacity: parseFloat(e.target.value) })
+                  }
+                  className="w-full accent-amber-400 h-1.5 bg-neutral-800 rounded-lg cursor-pointer"
+                />
+              </div>
+
+              {/* Blur Level */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-neutral-400">
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-neutral-400" />
+                    Backdrop Softness / Blur
+                  </span>
+                  <span className="text-neutral-300 font-medium">
+                    {(motionConfig.bgMediaBlur ?? 0) === 0
+                      ? 'Sharp (0px)'
+                      : (motionConfig.bgMediaBlur ?? 0) === 2
+                      ? 'Soft (2px)'
+                      : 'Dreamy (5px)'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-lg border border-neutral-800">
+                  {[
+                    { label: 'Sharp', val: 0 },
+                    { label: 'Soft', val: 2 },
+                    { label: 'Dreamy', val: 5 },
+                  ].map((b) => (
+                    <button
+                      key={b.val}
+                      onClick={() => onUpdateMotionConfig({ bgMediaBlur: b.val })}
+                      className={`flex-1 py-1 rounded-md text-xs font-medium transition-colors ${
+                        (motionConfig.bgMediaBlur ?? 0) === b.val
+                          ? 'bg-neutral-750 text-amber-400 shadow-sm'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Motion Style Selection */}

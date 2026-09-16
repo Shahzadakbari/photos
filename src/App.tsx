@@ -109,11 +109,17 @@ export function App() {
 
   // Background Color & Motion State
   const DEFAULT_BG_COLOR = '#171717';
+  const DEFAULT_BG_GIF_URL = 'https://c.tenor.com/G0dP5NM52YwAAAAC/roof-piece-luffy.gif';
+
   const DEFAULT_MOTION_CONFIG: BackgroundMotionConfig = {
     style: 'aurora',
     speed: 'normal',
     intensity: 'balanced',
     enabled: true,
+    bgMediaUrl: DEFAULT_BG_GIF_URL,
+    bgMediaEnabled: true,
+    bgMediaOpacity: 0.65,
+    bgMediaBlur: 0,
   };
 
   const [backgroundColor, setBackgroundColor] = useState<string>(() => {
@@ -123,7 +129,13 @@ export function App() {
     const saved = localStorage.getItem('photos_vault_motion_config');
     if (saved) {
       try {
-        return { ...DEFAULT_MOTION_CONFIG, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        return { 
+          ...DEFAULT_MOTION_CONFIG, 
+          ...parsed,
+          bgMediaUrl: parsed.bgMediaUrl || DEFAULT_BG_GIF_URL,
+          bgMediaEnabled: parsed.bgMediaEnabled ?? true,
+        };
       } catch (e) {
         console.error('Failed to parse cached motion config:', e);
       }

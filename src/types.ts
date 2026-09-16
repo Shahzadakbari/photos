@@ -68,4 +68,8 @@ export interface BackgroundMotionConfig {
   speed: BackgroundMotionSpeed;
   intensity: BackgroundMotionIntensity;
   enabled: boolean;
+  bgMediaUrl?: string;
+  bgMediaEnabled?: boolean;
+  bgMediaOpacity?: number;
+  bgMediaBlur?: number;
 }
