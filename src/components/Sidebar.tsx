@@ -5,10 +5,11 @@ import {
   Folder, 
   MapPin, 
   Sparkles, 
-  FolderPlus,
-  Compass,
-  Tag,
-  SlidersHorizontal
+  FolderPlus, 
+  Compass, 
+  Tag, 
+  SlidersHorizontal,
+  Palette
 } from 'lucide-react';
 import { Album, ActiveTab } from '../types';
 
@@ -24,6 +25,8 @@ interface SidebarProps {
   favoritesCount: number;
   totalPhotosCount: number;
   onOpenNewAlbum: () => void;
+  backgroundColor: string;
+  onOpenBackgroundPicker: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -38,6 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   favoritesCount,
   totalPhotosCount,
   onOpenNewAlbum,
+  backgroundColor,
+  onOpenBackgroundPicker,
 }) => {
   return (
     <aside className="w-64 shrink-0 bg-neutral-900/50 border-r border-neutral-800 p-4 flex flex-col justify-between hidden lg:flex">
@@ -170,6 +175,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
             })}
           </div>
         </div>
+      </div>
+
+      {/* Background Color Quick Selector in Sidebar */}
+      <div className="pt-4 border-t border-neutral-800/80">
+        <button
+          id="edit-background-sidebar-btn"
+          onClick={onOpenBackgroundPicker}
+          className="w-full p-2.5 rounded-xl bg-neutral-800/60 hover:bg-neutral-800 border border-neutral-700/60 flex items-center justify-between text-xs text-neutral-300 hover:text-white transition-all group shadow-sm active:scale-98"
+          title="Change Background Color"
+        >
+          <div className="flex items-center gap-2">
+            <Palette className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
+            <span className="font-medium">Edit Background</span>
+          </div>
+          <div
+            className="w-4 h-4 rounded-full border border-white/30 shadow-inner group-hover:scale-110 transition-transform"
+            style={{ backgroundColor }}
+          />
+        </button>
       </div>
 
       {/* Footer Info */}

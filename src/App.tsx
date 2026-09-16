@@ -27,6 +27,9 @@ import {
   AlbumsView 
 } from './components/AlbumsView';
 import { 
+  BackgroundColorModal 
+} from './components/BackgroundColorModal';
+import { 
   initialPhotos, 
   initialAlbums 
 } from './data/initialPhotos';
@@ -45,7 +48,8 @@ import {
   Sparkles, 
   Folder, 
   X,
-  Plus
+  Plus,
+  Palette
 } from 'lucide-react';
 
 const CATEGORIES = ['Nature', 'Architecture', 'Portraits', 'Travel', 'Street', 'Macro'];
@@ -99,6 +103,13 @@ export function App() {
   const [viewLayout, setViewLayout] = useState<ViewLayout>('grid');
   const [sortBy, setSortBy] = useState<SortOption>('date-desc');
 
+  // Background Color State
+  const DEFAULT_BG_COLOR = '#171717';
+  const [backgroundColor, setBackgroundColor] = useState<string>(() => {
+    return localStorage.getItem('photos_vault_bg_color') || DEFAULT_BG_COLOR;
+  });
+  const [isBackgroundPickerOpen, setIsBackgroundPickerOpen] = useState(false);
+
   // Modals & Overlays
   const [activeLightboxPhoto, setActiveLightboxPhoto] = useState<Photo | null>(null);
   const [activeEditorPhoto, setActiveEditorPhoto] = useState<Photo | null>(null);
@@ -113,6 +124,20 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('photos_vault_albums', JSON.stringify(albums));
   }, [albums]);
+
+  useEffect(() => {
+    localStorage.setItem('photos_vault_bg_color', backgroundColor);
+  }, [backgroundColor]);
+
+  const isLightBg = useMemo(() => {
+    const hex = backgroundColor.replace('#', '');
+    if (hex.length !== 6) return false;
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return lum > 0.5;
+  }, [backgroundColor]);
 
   // Actions
   const handleToggleFavorite = (id: string, e?: React.MouseEvent) => {
@@ -225,7 +250,12 @@ export function App() {
   const currentAlbum = useMemo(() => albums.find((a) => a.id === selectedAlbumId), [albums, selectedAlbumId]);
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-neutral-100 flex flex-col font-sans">
+    <div 
+      className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
+        isLightBg ? 'text-neutral-900' : 'text-neutral-100'
+      }`}
+      style={{ backgroundColor }}
+    >
       {/* Top Navigation */}
       <Navbar
         searchQuery={searchQuery}
@@ -242,6 +272,8 @@ export function App() {
         favoritesOnly={favoritesOnly}
         onToggleFavoritesOnly={() => setFavoritesOnly((prev) => !prev)}
         totalPhotosCount={photos.length}
+        backgroundColor={backgroundColor}
+        onOpenBackgroundPicker={() => setIsBackgroundPickerOpen(true)}
       />
 
       <div className="flex-1 flex max-w-7xl w-full mx-auto">
@@ -265,6 +297,8 @@ export function App() {
           favoritesCount={favoritesCount}
           totalPhotosCount={photos.length}
           onOpenNewAlbum={() => setIsNewAlbumOpen(true)}
+          backgroundColor={backgroundColor}
+          onOpenBackgroundPicker={() => setIsBackgroundPickerOpen(true)}
         />
 
         {/* Main Workspace */}
@@ -328,7 +362,7 @@ export function App() {
                   ))}
                 </div>
 
-                {/* Sort dropdown */}
+                {/* Sort dropdown & Edit Background action */}
                 <div className="flex items-center gap-2 shrink-0">
                   <span className="text-xs text-neutral-400 flex items-center gap-1">
                     <ArrowUpDown className="w-3.5 h-3.5 text-neutral-500" />
@@ -344,6 +378,20 @@ export function App() {
                     <option value="rating-desc">Highest Rated</option>
                     <option value="title-asc">Title (A-Z)</option>
                   </select>
+
+                  <button
+                    id="edit-background-inline-btn"
+                    onClick={() => setIsBackgroundPickerOpen(true)}
+                    className="text-xs px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-750 text-neutral-300 hover:text-white border border-neutral-700 flex items-center gap-1.5 transition-colors shrink-0 shadow-sm"
+                    title="Edit Background Color"
+                  >
+                    <Palette className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="hidden sm:inline">Edit Background</span>
+                    <span
+                      className="w-2.5 h-2.5 rounded-full border border-white/30 shadow-inner"
+                      style={{ backgroundColor }}
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -493,6 +541,16 @@ export function App() {
           onCreateAlbum={handleCreateAlbum}
         />
       )}
+
+      {/* Background Color Picker Modal */}
+      <BackgroundColorModal
+        isOpen={isBackgroundPickerOpen}
+        onClose={() => setIsBackgroundPickerOpen(false)}
+        currentColor={backgroundColor}
+        onSelectColor={setBackgroundColor}
+        onResetColor={() => setBackgroundColor(DEFAULT_BG_COLOR)}
+        defaultColor={DEFAULT_BG_COLOR}
+      />
     </div>
   );
 }
