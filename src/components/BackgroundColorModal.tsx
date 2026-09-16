@@ -8,8 +8,22 @@ import {
   Pipette, 
   Sun, 
   Moon, 
-  Sliders
+  Sliders,
+  Waves,
+  CircleDot,
+  Compass,
+  HeartPulse,
+  Activity,
+  Zap,
+  Gauge
 } from 'lucide-react';
+import { 
+  BackgroundMotionConfig, 
+  BackgroundMotionStyle, 
+  BackgroundMotionSpeed, 
+  BackgroundMotionIntensity 
+} from '../types';
+import { getMotionPaletteForColor } from '../utils/colorMotion';
 
 interface BackgroundColorModalProps {
   isOpen: boolean;
@@ -18,6 +32,8 @@ interface BackgroundColorModalProps {
   onSelectColor: (color: string) => void;
   onResetColor: () => void;
   defaultColor: string;
+  motionConfig: BackgroundMotionConfig;
+  onUpdateMotionConfig: (config: Partial<BackgroundMotionConfig>) => void;
 }
 
 interface ColorPreset {
@@ -68,11 +84,15 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
   onSelectColor,
   onResetColor,
   defaultColor,
+  motionConfig,
+  onUpdateMotionConfig,
 }) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'dark' | 'rich' | 'vibrant' | 'light'>('all');
   const [customInput, setCustomInput] = useState(currentColor);
 
   if (!isOpen) return null;
+
+  const motionPalette = getMotionPaletteForColor(currentColor);
 
   const handleCustomChange = (val: string) => {
     setCustomInput(val);
@@ -91,24 +111,32 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
     ? COLOR_PRESETS 
     : COLOR_PRESETS.filter((p) => p.category === activeCategory);
 
+  const motionStyles: { id: BackgroundMotionStyle; label: string; icon: React.ReactNode; desc: string }[] = [
+    { id: 'aurora', label: 'Aurora Waves', icon: <Waves className="w-3.5 h-3.5" />, desc: 'Silky flowing light waves' },
+    { id: 'orbs', label: 'Floating Orbs', icon: <CircleDot className="w-3.5 h-3.5" />, desc: 'Drifting glowing ambient spheres' },
+    { id: 'flow', label: 'Cosmic Drift', icon: <Compass className="w-3.5 h-3.5" />, desc: 'Rotating deep gradient flow' },
+    { id: 'pulse', label: 'Breathing Pulse', icon: <HeartPulse className="w-3.5 h-3.5" />, desc: 'Gentle rhythmic glow pulse' },
+    { id: 'static', label: 'Solid Still', icon: <Activity className="w-3.5 h-3.5" />, desc: 'Solid static background' },
+  ];
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div 
-        className="bg-neutral-900 border border-neutral-700/80 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-6 text-neutral-100 max-h-[90vh] overflow-y-auto"
+        className="bg-neutral-900 border border-neutral-700/80 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 text-neutral-100 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 text-white shadow-md shadow-rose-500/20">
+            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-500 text-white shadow-md shadow-rose-500/20">
               <Palette className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                Edit Background Color
+                Edit Background & Motion
                 <span 
                   className="inline-block w-4 h-4 rounded-full border border-white/30 shadow-inner"
                   style={{ backgroundColor: currentColor }}
@@ -116,7 +144,7 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
                 />
               </h2>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Pick a curated theme or choose a custom hex color for your photos canvas
+                Each color features harmonious ambient motion effects tailored to its hue
               </p>
             </div>
           </div>
@@ -129,12 +157,180 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
           </button>
         </div>
 
+        {/* Live Motion & Color Hero Banner */}
+        <div 
+          className="relative rounded-2xl p-4 overflow-hidden border border-neutral-700/70 shadow-lg"
+          style={{ backgroundColor: currentColor }}
+        >
+          {/* Subtle animated orbs in miniature preview */}
+          {motionConfig.enabled && motionConfig.style !== 'static' && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-60 filter blur-xl">
+              <div 
+                className="absolute -top-10 -left-10 w-44 h-44 rounded-full animate-pulse"
+                style={{ backgroundColor: motionPalette.glow1 }}
+              />
+              <div 
+                className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full animate-bounce"
+                style={{ backgroundColor: motionPalette.glow2, animationDuration: '6s' }}
+              />
+              <div 
+                className="absolute top-1/2 left-1/3 w-32 h-32 rounded-full"
+                style={{ backgroundColor: motionPalette.glow3 }}
+              />
+            </div>
+          )}
+
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 bg-neutral-950/60 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl border-2 border-white/40 shadow-inner flex items-center justify-center shrink-0"
+                style={{ backgroundColor: currentColor }}
+              >
+                <Sparkles className="w-4 h-4 text-white drop-shadow" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-white flex items-center gap-2">
+                  <span>Active Base Color:</span>
+                  <span className="font-mono text-amber-300 uppercase font-bold">{currentColor}</span>
+                </div>
+                <div className="text-[11px] text-neutral-300 flex items-center gap-2 mt-0.5">
+                  <span className="capitalize">
+                    Motion: <strong className="text-amber-400">{motionConfig.enabled ? motionConfig.style : 'Disabled'}</strong>
+                  </span>
+                  <span>•</span>
+                  <span className="capitalize">{motionConfig.speed} speed</span>
+                  <span>•</span>
+                  <span className="capitalize">{motionConfig.intensity} glow</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Toggle for Motion */}
+            <button
+              onClick={() => onUpdateMotionConfig({ enabled: !motionConfig.enabled })}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${
+                motionConfig.enabled
+                  ? 'bg-amber-500 hover:bg-amber-400 text-neutral-950'
+                  : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>{motionConfig.enabled ? 'Motion ON' : 'Motion OFF'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Motion Style Selection */}
+        <div className="p-4 rounded-xl bg-neutral-850/90 border border-neutral-800 space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
+              <Waves className="w-3.5 h-3.5 text-amber-400" />
+              Background Motion Style for this Color
+            </label>
+            <span className="text-[11px] text-amber-400 font-medium">
+              Fluid GPU-accelerated motion
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {motionStyles.map((style) => {
+              const isSelected = motionConfig.style === style.id;
+              return (
+                <button
+                  key={style.id}
+                  onClick={() => {
+                    onUpdateMotionConfig({ 
+                      style: style.id, 
+                      enabled: style.id !== 'static' 
+                    });
+                  }}
+                  className={`p-2.5 rounded-xl border text-left transition-all group flex flex-col justify-between ${
+                    isSelected
+                      ? 'border-amber-400 bg-neutral-800 text-white shadow-md ring-1 ring-amber-400/40'
+                      : 'border-neutral-800 bg-neutral-900/60 text-neutral-300 hover:border-neutral-700 hover:bg-neutral-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-white">
+                      <span className={isSelected ? 'text-amber-400' : 'text-neutral-400 group-hover:text-amber-300'}>
+                        {style.icon}
+                      </span>
+                      <span>{style.label}</span>
+                    </div>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                  </div>
+                  <p className="text-[10px] text-neutral-400 line-clamp-1">
+                    {style.desc}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Speed & Intensity Controls */}
+          {motionConfig.enabled && motionConfig.style !== 'static' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-neutral-800/80">
+              {/* Motion Speed */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-neutral-400">
+                  <span className="flex items-center gap-1">
+                    <Gauge className="w-3 h-3 text-neutral-400" />
+                    Motion Speed
+                  </span>
+                  <span className="capitalize text-neutral-300 font-medium">{motionConfig.speed}</span>
+                </div>
+                <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-lg border border-neutral-800">
+                  {(['slow', 'normal', 'fast'] as BackgroundMotionSpeed[]).map((spd) => (
+                    <button
+                      key={spd}
+                      onClick={() => onUpdateMotionConfig({ speed: spd })}
+                      className={`flex-1 py-1 rounded-md text-xs font-medium capitalize transition-colors ${
+                        motionConfig.speed === spd
+                          ? 'bg-neutral-750 text-amber-400 shadow-sm'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      {spd}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Motion Intensity */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-neutral-400">
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-neutral-400" />
+                    Motion Glow
+                  </span>
+                  <span className="capitalize text-neutral-300 font-medium">{motionConfig.intensity}</span>
+                </div>
+                <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-lg border border-neutral-800">
+                  {(['subtle', 'balanced', 'vivid'] as BackgroundMotionIntensity[]).map((intn) => (
+                    <button
+                      key={intn}
+                      onClick={() => onUpdateMotionConfig({ intensity: intn })}
+                      className={`flex-1 py-1 rounded-md text-xs font-medium capitalize transition-colors ${
+                        motionConfig.intensity === intn
+                          ? 'bg-neutral-750 text-amber-400 shadow-sm'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      {intn}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Custom Color Selector & Hex Input */}
         <div className="p-4 rounded-xl bg-neutral-850/80 border border-neutral-800 space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-xs font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
               <Pipette className="w-3.5 h-3.5 text-amber-400" />
-              Custom Color Picker
+              Custom Color Picker (With Auto-Generated Motion Palette)
             </label>
             <button
               onClick={handleRandomColor}
@@ -201,7 +397,7 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-              Curated Color Palettes
+              Curated Color Palettes (Each with Unique Motion Accents)
             </span>
             <span className="text-xs text-neutral-500">
               {filteredPresets.length} presets
@@ -269,6 +465,7 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
             {filteredPresets.map((preset) => {
               const isSelected = currentColor.toLowerCase() === preset.hex.toLowerCase();
+              const presetPalette = getMotionPaletteForColor(preset.hex);
               return (
                 <button
                   key={preset.hex}
@@ -276,27 +473,36 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
                     onSelectColor(preset.hex);
                     setCustomInput(preset.hex);
                   }}
-                  className={`p-2.5 rounded-xl border flex items-center gap-3 transition-all text-left group ${
+                  className={`p-2.5 rounded-xl border flex items-center gap-3 transition-all text-left group relative overflow-hidden ${
                     isSelected
                       ? 'border-amber-400 bg-neutral-800 shadow-md ring-2 ring-amber-400/20'
                       : 'border-neutral-800 bg-neutral-850 hover:border-neutral-700 hover:bg-neutral-800'
                   }`}
                 >
                   <div 
-                    className="w-8 h-8 rounded-lg shrink-0 border border-white/20 shadow-inner flex items-center justify-center transition-transform group-hover:scale-105"
+                    className="w-9 h-9 rounded-lg shrink-0 border border-white/20 shadow-inner flex items-center justify-center transition-transform group-hover:scale-105 relative overflow-hidden"
                     style={{ backgroundColor: preset.hex }}
                   >
+                    {/* Tiny motion accent dot */}
+                    <span 
+                      className="absolute -top-1 -right-1 w-4 h-4 rounded-full opacity-60 filter blur-[2px]"
+                      style={{ backgroundColor: presetPalette.glow1 }}
+                    />
                     {isSelected && (
-                      <Check className={`w-4 h-4 ${preset.category === 'light' ? 'text-neutral-900' : 'text-white'}`} />
+                      <Check className={`w-4 h-4 relative z-10 ${preset.category === 'light' ? 'text-neutral-900' : 'text-white'}`} />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-neutral-200 group-hover:text-white truncate">
                       {preset.name}
                     </p>
-                    <p className="text-[10px] font-mono text-neutral-400 uppercase">
-                      {preset.hex}
-                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase">
+                        {preset.hex}
+                      </span>
+                      <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: presetPalette.glow1 }} title="Primary motion color" />
+                      <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: presetPalette.glow2 }} title="Secondary motion color" />
+                    </div>
                   </div>
                 </button>
               );
@@ -307,10 +513,12 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
         {/* Modal Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
           <div className="text-xs text-neutral-400 flex items-center gap-2">
-            <span>Selected:</span>
+            <span>Active:</span>
             <span className="font-mono font-bold text-amber-300 uppercase">
               {currentColor}
             </span>
+            <span className="text-neutral-500">•</span>
+            <span className="text-neutral-300 capitalize">{motionConfig.style} motion</span>
           </div>
           <button
             onClick={onClose}
@@ -323,3 +531,4 @@ export const BackgroundColorModal: React.FC<BackgroundColorModalProps> = ({
     </div>
   );
 };
+

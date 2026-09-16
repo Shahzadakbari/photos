@@ -30,6 +30,9 @@ import {
   BackgroundColorModal 
 } from './components/BackgroundColorModal';
 import { 
+  MotionBackground 
+} from './components/MotionBackground';
+import { 
   initialPhotos, 
   initialAlbums 
 } from './data/initialPhotos';
@@ -39,7 +42,8 @@ import {
   ViewLayout, 
   SortOption, 
   ActiveTab, 
-  PhotoAdjustments 
+  PhotoAdjustments,
+  BackgroundMotionConfig
 } from './types';
 import { 
   SlidersHorizontal, 
@@ -103,10 +107,28 @@ export function App() {
   const [viewLayout, setViewLayout] = useState<ViewLayout>('grid');
   const [sortBy, setSortBy] = useState<SortOption>('date-desc');
 
-  // Background Color State
+  // Background Color & Motion State
   const DEFAULT_BG_COLOR = '#171717';
+  const DEFAULT_MOTION_CONFIG: BackgroundMotionConfig = {
+    style: 'aurora',
+    speed: 'normal',
+    intensity: 'balanced',
+    enabled: true,
+  };
+
   const [backgroundColor, setBackgroundColor] = useState<string>(() => {
     return localStorage.getItem('photos_vault_bg_color') || DEFAULT_BG_COLOR;
+  });
+  const [motionConfig, setMotionConfig] = useState<BackgroundMotionConfig>(() => {
+    const saved = localStorage.getItem('photos_vault_motion_config');
+    if (saved) {
+      try {
+        return { ...DEFAULT_MOTION_CONFIG, ...JSON.parse(saved) };
+      } catch (e) {
+        console.error('Failed to parse cached motion config:', e);
+      }
+    }
+    return DEFAULT_MOTION_CONFIG;
   });
   const [isBackgroundPickerOpen, setIsBackgroundPickerOpen] = useState(false);
 
@@ -128,6 +150,14 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('photos_vault_bg_color', backgroundColor);
   }, [backgroundColor]);
+
+  useEffect(() => {
+    localStorage.setItem('photos_vault_motion_config', JSON.stringify(motionConfig));
+  }, [motionConfig]);
+
+  const handleUpdateMotionConfig = (partial: Partial<BackgroundMotionConfig>) => {
+    setMotionConfig((prev) => ({ ...prev, ...partial }));
+  };
 
   const isLightBg = useMemo(() => {
     const hex = backgroundColor.replace('#', '');
@@ -251,11 +281,16 @@ export function App() {
 
   return (
     <div 
-      className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
+      className={`min-h-screen flex flex-col font-sans transition-colors duration-300 relative ${
         isLightBg ? 'text-neutral-900' : 'text-neutral-100'
       }`}
-      style={{ backgroundColor }}
     >
+      {/* Dynamic Animated Motion Background for Current Color */}
+      <MotionBackground
+        backgroundColor={backgroundColor}
+        config={motionConfig}
+      />
+
       {/* Top Navigation */}
       <Navbar
         searchQuery={searchQuery}
@@ -542,7 +577,7 @@ export function App() {
         />
       )}
 
-      {/* Background Color Picker Modal */}
+      {/* Background Color & Motion Picker Modal */}
       <BackgroundColorModal
         isOpen={isBackgroundPickerOpen}
         onClose={() => setIsBackgroundPickerOpen(false)}
@@ -550,6 +585,8 @@ export function App() {
         onSelectColor={setBackgroundColor}
         onResetColor={() => setBackgroundColor(DEFAULT_BG_COLOR)}
         defaultColor={DEFAULT_BG_COLOR}
+        motionConfig={motionConfig}
+        onUpdateMotionConfig={handleUpdateMotionConfig}
       />
     </div>
   );

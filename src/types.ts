@@ -58,3 +58,14 @@ export interface Album {
 export type ViewLayout = 'masonry' | 'grid' | 'details';
 export type SortOption = 'date-desc' | 'date-asc' | 'title-asc' | 'rating-desc';
 export type ActiveTab = 'all' | 'favorites' | 'albums' | 'places';
+
+export type BackgroundMotionStyle = 'aurora' | 'orbs' | 'flow' | 'pulse' | 'static';
+export type BackgroundMotionSpeed = 'slow' | 'normal' | 'fast';
+export type BackgroundMotionIntensity = 'subtle' | 'balanced' | 'vivid';
+
+export interface BackgroundMotionConfig {
+  style: BackgroundMotionStyle;
+  speed: BackgroundMotionSpeed;
+  intensity: BackgroundMotionIntensity;
+  enabled: boolean;
+}
