@@ -27,9 +27,6 @@ import {
   AlbumsView 
 } from './components/AlbumsView';
 import { 
-  BackgroundColorModal 
-} from './components/BackgroundColorModal';
-import { 
   MotionBackground 
 } from './components/MotionBackground';
 import { 
@@ -52,8 +49,7 @@ import {
   Sparkles, 
   Folder, 
   X,
-  Plus,
-  Palette
+  Plus
 } from 'lucide-react';
 
 const CATEGORIES = ['Nature', 'Architecture', 'Portraits', 'Travel', 'Street', 'Macro'];
@@ -142,7 +138,6 @@ export function App() {
     }
     return DEFAULT_MOTION_CONFIG;
   });
-  const [isBackgroundPickerOpen, setIsBackgroundPickerOpen] = useState(false);
 
   // Modals & Overlays
   const [activeLightboxPhoto, setActiveLightboxPhoto] = useState<Photo | null>(null);
@@ -166,10 +161,6 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('photos_vault_motion_config', JSON.stringify(motionConfig));
   }, [motionConfig]);
-
-  const handleUpdateMotionConfig = (partial: Partial<BackgroundMotionConfig>) => {
-    setMotionConfig((prev) => ({ ...prev, ...partial }));
-  };
 
   const isLightBg = useMemo(() => {
     const hex = backgroundColor.replace('#', '');
@@ -319,8 +310,6 @@ export function App() {
         favoritesOnly={favoritesOnly}
         onToggleFavoritesOnly={() => setFavoritesOnly((prev) => !prev)}
         totalPhotosCount={photos.length}
-        backgroundColor={backgroundColor}
-        onOpenBackgroundPicker={() => setIsBackgroundPickerOpen(true)}
       />
 
       <div className="flex-1 flex max-w-7xl w-full mx-auto">
@@ -344,8 +333,6 @@ export function App() {
           favoritesCount={favoritesCount}
           totalPhotosCount={photos.length}
           onOpenNewAlbum={() => setIsNewAlbumOpen(true)}
-          backgroundColor={backgroundColor}
-          onOpenBackgroundPicker={() => setIsBackgroundPickerOpen(true)}
         />
 
         {/* Main Workspace */}
@@ -425,20 +412,6 @@ export function App() {
                     <option value="rating-desc">Highest Rated</option>
                     <option value="title-asc">Title (A-Z)</option>
                   </select>
-
-                  <button
-                    id="edit-background-inline-btn"
-                    onClick={() => setIsBackgroundPickerOpen(true)}
-                    className="text-xs px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-750 text-neutral-300 hover:text-white border border-neutral-700 flex items-center gap-1.5 transition-colors shrink-0 shadow-sm"
-                    title="Edit Background Color"
-                  >
-                    <Palette className="w-3.5 h-3.5 text-amber-400" />
-                    <span className="hidden sm:inline">Edit Background</span>
-                    <span
-                      className="w-2.5 h-2.5 rounded-full border border-white/30 shadow-inner"
-                      style={{ backgroundColor }}
-                    />
-                  </button>
                 </div>
               </div>
             </div>
@@ -588,18 +561,6 @@ export function App() {
           onCreateAlbum={handleCreateAlbum}
         />
       )}
-
-      {/* Background Color & Motion Picker Modal */}
-      <BackgroundColorModal
-        isOpen={isBackgroundPickerOpen}
-        onClose={() => setIsBackgroundPickerOpen(false)}
-        currentColor={backgroundColor}
-        onSelectColor={setBackgroundColor}
-        onResetColor={() => setBackgroundColor(DEFAULT_BG_COLOR)}
-        defaultColor={DEFAULT_BG_COLOR}
-        motionConfig={motionConfig}
-        onUpdateMotionConfig={handleUpdateMotionConfig}
-      />
     </div>
   );
 }

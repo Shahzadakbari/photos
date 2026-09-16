@@ -8,8 +8,7 @@ import {
   Upload, 
   Heart, 
   FolderPlus,
-  X,
-  Palette
+  X
 } from 'lucide-react';
 import { ViewLayout, SortOption } from '../types';
 
@@ -28,8 +27,6 @@ interface NavbarProps {
   favoritesOnly: boolean;
   onToggleFavoritesOnly: () => void;
   totalPhotosCount: number;
-  backgroundColor: string;
-  onOpenBackgroundPicker: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -46,8 +43,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   favoritesOnly,
   onToggleFavoritesOnly,
   totalPhotosCount,
-  backgroundColor,
-  onOpenBackgroundPicker,
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-neutral-900/90 backdrop-blur-md border-b border-neutral-800">
@@ -137,21 +132,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <List className="w-4 h-4" />
               </button>
             </div>
-
-            {/* Edit Background button */}
-            <button
-              id="edit-background-nav-btn"
-              onClick={onOpenBackgroundPicker}
-              className="p-2 sm:px-3 sm:py-2 rounded-lg bg-neutral-800/80 hover:bg-neutral-800 border border-neutral-700/70 text-neutral-200 hover:text-white transition-all text-sm flex items-center gap-1.5 shadow-sm active:scale-95 group"
-              title="Edit Background Color"
-            >
-              <Palette className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
-              <span className="hidden sm:inline font-medium">Edit Background</span>
-              <span
-                className="w-3.5 h-3.5 rounded-full border border-white/30 shrink-0 ml-0.5 shadow-inner"
-                style={{ backgroundColor }}
-              />
-            </button>
 
             {/* New Album button */}
             <button
