@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Maximize2, Sliders, MapPin, Star, Calendar, Image as ImageIcon } from 'lucide-react';
+import { Heart, Maximize2, Sliders, MapPin, Star, Calendar, Image as ImageIcon, Film } from 'lucide-react';
 import { Photo, ViewLayout } from '../types';
 
 interface PhotoCardProps {
@@ -25,6 +25,11 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 
   const displayNum =
     index ?? (photo.id.match(/\d+/) ? parseInt(photo.id.match(/\d+/)![0], 10) : undefined);
+
+  const isAnimation =
+    photo.url.toLowerCase().endsWith('.gif') ||
+    photo.thumbnailUrl.toLowerCase().endsWith('.gif') ||
+    photo.tags?.includes('animation');
 
   // Details list view layout
   if (viewLayout === 'details') {
@@ -66,6 +71,12 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
             <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-700/60 text-neutral-300">
               {photo.category}
             </span>
+            {isAnimation && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Animation
+              </span>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-neutral-400">
@@ -169,6 +180,12 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
             <span className="text-[10px] font-medium tracking-wide uppercase px-1.5 py-0.5 rounded-md bg-neutral-900/80 backdrop-blur-md text-neutral-200 border border-neutral-700/60 shadow-sm select-none">
               {photo.category}
             </span>
+            {isAnimation && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 backdrop-blur-md shadow-sm select-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Animation
+              </span>
+            )}
           </div>
 
           {/* Favorite button overlay */}
@@ -290,6 +307,12 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
               <span className="text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-md bg-neutral-900/80 backdrop-blur-md text-neutral-200 border border-neutral-700/60 select-none">
                 {photo.category}
               </span>
+              {isAnimation && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 backdrop-blur-md select-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  Animation
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-1.5">

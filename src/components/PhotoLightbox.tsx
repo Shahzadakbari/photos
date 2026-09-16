@@ -99,6 +99,11 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
 
   const photoAlbums = albums.filter((alb) => photo.albumIds.includes(alb.id));
 
+  const isAnimation =
+    photo.url.toLowerCase().endsWith('.gif') ||
+    photo.thumbnailUrl.toLowerCase().endsWith('.gif') ||
+    photo.tags?.includes('animation');
+
   return (
     <div className="fixed inset-0 z-50 flex bg-neutral-950/95 backdrop-blur-xl text-neutral-100 select-none">
       {/* Main View Area */}
@@ -112,6 +117,12 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
             <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
               {currentIndex + 1} / {photos.length}
             </span>
+            {isAnimation && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                Animation
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
